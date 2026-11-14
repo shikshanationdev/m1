@@ -1,0 +1,84 @@
+# Deploys M1 to an EC2 instance through AWS SSM (same approach as snfrontend).
+# Manual trigger only until the values below and the AWS_ROLE_ARN secret are set.
+# Once configured, add `push: { branches: [main] }` under `on:` for auto-deploys.
+name: M1 Production Deploy (AWS EC2)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-south-1
+  EC2_INSTANCE_ID: i-REPLACE_ME          # EC2 instance that runs M1
+  APP_PATH: /home/ubuntu/m1              # where the repo is cloned on the server
+  PM2_APP_NAME: m1-web                   # matches ecosystem.config.js
+  NODE_VERSION: "22"
+
+jobs:
+  build:
+    name: Validate and Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+
+  deploy:
+    name: Deploy to EC2
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Pull, build and reload on the server
+        id: deploy
+        shell: bash
+        run: |
+          RUN='export HOME=/home/ubuntu NVM_DIR=/home/ubuntu/.nvm && . /home/ubuntu/.nvm/nvm.sh && nvm use ${{ env.NODE_VERSION }} >/dev/null && cd ${{ env.APP_PATH }}'
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "${{ env.EC2_INSTANCE_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --timeout-seconds 900 \
+            --comment "M1 deploy" \
+            --parameters "commands=[
+              \"set -e\",
+              \"sudo -u ubuntu bash -lc '$RUN && git fetch origin main && git reset --hard origin/main'\",
+              \"sudo -u ubuntu bash -lc '$RUN && npm ci && npm run build'\",
+              \"sudo -u ubuntu bash -lc '$RUN && (pm2 reload ${{ env.PM2_APP_NAME }} || pm2 start ecosystem.config.js --env production) && pm2 save'\",
+              \"curl -s -o /dev/null -w 'HTTP_STATUS=%{http_code}' http://127.0.0.1:3001/\"
+            ]" \
+            --query "Command.CommandId" --output text)
+          echo "command_id=$COMMAND_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for the deploy to finish
+        shell: bash
+        run: |
+          for i in {1..90}; do
+            STATUS=$(aws ssm get-command-invocation --command-id "${{ steps.deploy.outputs.command_id }}" \
+              --instance-id "${{ env.EC2_INSTANCE_ID }}" --query Status --output text 2>/dev/null || echo Pending)
+            echo "[$i/90] $STATUS"
+            case "$STATUS" in
+              Success) break ;;
+              Failed|Cancelled|TimedOut) exit 1 ;;
+            esac
+            sleep 10
+          done
+          [ "$STATUS" = "Success" ] || exit 1
+
+      - name: Show server output
+        if: always()
+        run: |
+          aws ssm get-command-invocation --command-id "${{ steps.deploy.outputs.command_id }}" \
+            --instance-id "${{ env.EC2_INSTANCE_ID }}" --query "[StandardOutputContent,StandardErrorContent]" --output text
