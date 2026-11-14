@@ -37,6 +37,10 @@ Set these in the hosting panel, or in `.env.local` on a server. They are read **
 
 If the plan has **no "Node.js Apps" section** (single/Premium shared hosting), Hostinger can only serve static files. Use option 1B below; it is not an error in the code.
 
+### Build crashes on `globals.css` / "worker exited before connecting"
+
+Next 16 uses Turbopack by default, which runs Tailwind/PostCSS in a separate worker process. Hostinger caps processes per account, so that worker gets killed. `npm run build` therefore runs `next build --webpack`, and `next.config.ts` limits the build to one worker. Keep the build command as `npm run build` (not `next build`). Use `npm ci` so Hostinger installs fresh Linux packages; never upload a `node_modules` or `.next` folder from Windows.
+
 ### 1A. Hostinger Node.js App (Business or Cloud plans)
 
 hPanel → **Websites → Add website → Node.js Apps → Import Git repository**

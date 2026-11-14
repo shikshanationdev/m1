@@ -17,6 +17,12 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
 
+  /* Shared hosts (Hostinger/CloudLinux) cap processes per account; extra build workers
+     can be killed mid-build. The site has only a few pages, so one worker is enough. */
+  experimental: {
+    cpus: 1,
+  },
+
   ...(staticExport
     ? { output: "export" as const, trailingSlash: true }
     : {
