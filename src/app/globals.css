@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/* M1 dark palette (from the M1 dark preview) exposed as Tailwind tokens:
+   bg-m1-espresso, text-m1-paper, border-m1-line, font-display, ... */
+@theme {
+  --color-m1-night: #140805;
+  --color-m1-espresso: #260f09;
+  --color-m1-mahogany: #431b0f;
+  --color-m1-copper: #a23c1c;
+  --color-m1-orange: #ff7229;
+  --color-m1-peach: #ffe4cb;
+  --color-m1-gold: #e3b08b;
+  --color-m1-paper: #f7f1e9;
+  --color-m1-line: rgb(247 241 233 / 0.14);
+  --color-m1-charcoal: #1b1411;
+  --color-m1-ivory: #f3efe4;
+  --color-m1-ivory-deep: #ebe4d6;
+  --color-m1-ink: #251915;
+
+  --font-display: var(--font-instrument), "Instrument Serif", Georgia, serif;
+  --font-sans: var(--font-manrope), "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex), "IBM Plex Mono", ui-monospace, monospace;
+}
+
+/* The page components (ported from the M1 static build) */
+@import "./m1.css";
+@import "./m1-light.css";
+@import "./m1-sections.css";

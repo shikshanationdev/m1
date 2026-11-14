@@ -1,0 +1,48 @@
+/* ===================== section colours, exactly as the M1 dark preview =====================
+   espresso #260F09 · charcoal #1B1411 · ivory #F3EFE4 · ivory-deep #EBE4D6 · copper #A23C1C · night #140805 */
+.hero{ background:var(--ivory) }                         /* espresso */
+.vision{ background:#1B1411 }                            /* charcoal */
+.eco-section{ background:#F3EFE4 }                       /* ivory (light) */
+.mod-section{ background:#EBE4D6 }                       /* ivory-deep (light) */
+.level{ background:#A23C1C }                             /* copper */
+.ladder{ background:#260F09 }                            /* espresso */
+.faculty{ background:#F3EFE4 }                           /* ivory (light) */
+.passport{ background:#140805 }                          /* night */
+.register{ background:#260F09 }                          /* espresso */
+.footer{ background:#1B1411 }                            /* charcoal */
+.eco-section, .mod-section, .faculty{ color:#251915 }
+
+/* buttons are M1 orange with espresso text on every band, as in the preview */
+.theme-light .btn-primary{ background:#FF7229; color:#260F09; box-shadow:0 14px 30px -16px rgba(255,114,41,.55) }
+.theme-light .btn-primary:hover{ background:#FF8A4C; box-shadow:0 18px 34px -16px rgba(255,114,41,.7) }
+.theme-light .icon-btn:hover{ background:#251915; color:#F3EFE4; border-color:#251915 }
+.theme-light .eyebrow{ color:#A23C1C }
+.theme-light .eyebrow::before{ background:linear-gradient(90deg,#A23C1C,rgba(162,60,28,0)) }
+/* React-port helpers keep working inside the light bands */
+.theme-light .eco-visual > .layer{ opacity:0; transform:scale(1.035) }
+.theme-light .eco-visual > .layer.is-on{ opacity:1; transform:none }
+.theme-light .fp-img{ opacity:0; transform:translateX(-50%) translateY(calc(18px * var(--motion))) scale(var(--z,1)) }
+.theme-light .fp-img.is-on{ opacity:1; transform:translateX(-50%) scale(var(--z,1)) }
+.theme-light .no-anim .thumb, .theme-light .no-anim .marker{ transition:none !important }
+
+/* ---------- Level One: copper band, paper text, peach accents ---------- */
+.theme-copper{ --taupe:rgba(247,241,233,.82); --bronze:#FFE4CB; --copper:#FFE4CB; --gold:#FFC29E; --peach:#FFE4CB;
+  --line:rgba(247,241,233,.24); --line-strong:rgba(247,241,233,.4); color:#F7F1E9 }
+.theme-copper .eyebrow{ color:#FFE4CB }
+.theme-copper .eyebrow::before{ background:linear-gradient(90deg,#FFE4CB,rgba(255,228,203,0)) }
+.theme-copper .h2 em{ color:#FFE4CB }
+.theme-copper .btn-primary{ background:#F7F1E9; color:#260F09; box-shadow:0 14px 30px -16px rgba(20,8,5,.6) }
+.theme-copper .btn-primary:hover{ background:#FFE4CB }
+.theme-copper .status-pill{ background:rgba(20,8,5,.18); border-color:rgba(255,228,203,.4); color:#FFE4CB }
+.theme-copper .status-pill::before{ background:#FFE4CB; box-shadow:0 0 0 3px rgba(255,228,203,.2) }
+.theme-copper .plate-arch{ background:radial-gradient(120% 70% at 70% 20%,#5A2414 0,#3A160C 45%,#260F09 100%) }
+.theme-copper .plate-tri{ background:linear-gradient(150deg,#FFE4CB 0%,#FF9B5E 50%,#FF7229 100%); opacity:.9 }
+.theme-copper .m1-plate figcaption span{ color:#F7F1E9 }
+/* the year calendar stays a night card with the dark accents */
+.theme-copper .year{ --taupe:rgba(247,241,233,.7); --bronze:#FF7229; --copper:#FF7229; --gold:#E3B08B; --peach:#FFE4CB;
+  --line:rgba(247,241,233,.14); background:#140805; box-shadow:0 50px 100px -50px rgba(20,8,5,.8) }
+.theme-copper .year .eyebrow{ color:#FF7229 }
+
+/* mobile menu labels */
+.mobile-menu li a .ml, .mobile-menu li a .ml span{ font:inherit; color:inherit }
+.mobile-menu li a .ml .one{ color:var(--copper) }
